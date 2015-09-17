@@ -1,10 +1,13 @@
 project(pietcreator)
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 
 set( CMAKE_BUILD_TYPE Debug)
 set( DEBUG_BUILD_TYPE ON )
 
-find_package(Qt4 REQUIRED)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+find_package(Qt5 REQUIRED COMPONENTS Widgets Test)
 
 add_subdirectory( npiet )
 
@@ -36,11 +39,11 @@ set( pietcreator_RCS
     fallback.qrc
     pietcreator.qrc )
 
-QT4_ADD_RESOURCES( pietcreator_SRCS ${pietcreator_RCS} )
+QT5_ADD_RESOURCES( pietcreator_SRCS ${pietcreator_RCS} )
 
-qt4_automoc(${pietcreator_SRCS})
+#qt4_automoc(${pietcreator_SRCS})
 
-qt4_wrap_ui( pietcreator_SRCS MainWindow.ui DebugWidget.ui )
+qt5_wrap_ui( pietcreator_SRCS MainWindow.ui DebugWidget.ui )
 
 IF(WIN32) 
 add_executable(pietcreator ${pietcreator_SRCS} ${CMAKE_CURRENT_SOURCE_DIR}/pietcreator.rc)
@@ -49,7 +52,7 @@ add_executable(pietcreator ${pietcreator_SRCS})
 endif(WIN32)
 
 target_link_libraries( pietcreator
-                       ${QT_QTCORE_LIBRARY}
-                       ${QT_QTGUI_LIBRARY}
+                       Qt5::Core
+                       Qt5::Widgets
                        npiet
                          )

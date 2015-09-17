@@ -23,7 +23,7 @@ extern "C"
 #include "npiet.h"
 }
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QMessageBox>
 #include <QDebug>
 
@@ -109,7 +109,9 @@ void ImageModel::setImage( const QImage& image, int codel_size )
 {
     mImage = autoScale(image, codel_size);
     qDebug() << mImage.width() << mImage.height();
-    reset();
+    //reset();
+    emit layoutChanged();
+
 }
 
 void ImageModel::newImage(int w, int h)

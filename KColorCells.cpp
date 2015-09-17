@@ -22,7 +22,7 @@
 #include "KColorMimeData.h"
 #include "ColorUtils.h"
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include <math.h>
 
@@ -42,7 +42,7 @@ public:
     bool inMouse;
 };
 
-class KColorCellsItemDelegate: public QStyledItemDelegate
+class KColorCellsItemDelegate : public QStyledItemDelegate
 {
 public:
     KColorCellsItemDelegate( KColorCells *parent ): QStyledItemDelegate( parent ) {}

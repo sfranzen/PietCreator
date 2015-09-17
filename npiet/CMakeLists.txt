@@ -32,6 +32,8 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DI
 set( CMAKE_BUILD_TYPE Debug)
 set( DEBUG_BUILD_TYPE ON )
 
+set( CMAKE_AUTOMOC ON )
+
 ENABLE_TESTING()
 
 ADD_TEST(npiettest ${EXECUTABLE_OUTPUT_PATH}/npiettest Hello)
@@ -50,13 +52,16 @@ target_link_libraries( npiet
 # Tests
 
 set( npiettest_SRCS test/NPietTest.cpp )
-qt4_automoc(${npiettest_SRCS})
+#qt4_automoc(${npiettest_SRCS})
 ADD_EXECUTABLE(npiettest ${npiettest_SRCS} )
 TARGET_LINK_LIBRARIES(npiettest
-    ${QT_LIBRARIES}
-    ${QT_QTTEST_LIBRARIES}
-    ${QT_QTCORE_LIBRARY}
-    ${QT_QTGUI_LIBRARY}
+    Qt5::Core
+    Qt5::Widgets
+    Qt5::Test
+    #${QT_LIBRARIES}
+    #${QT_QTTEST_LIBRARIES}
+    #${QT_QTCORE_LIBRARY}
+    #${QT_QTGUI_LIBRARY}
     npiet )
 
 # copy libs to the output dirs

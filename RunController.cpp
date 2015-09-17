@@ -30,7 +30,7 @@
 #include <iostream>
 
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
 #include <unistd.h>
 #include <fcntl.h>
 #endif
@@ -44,7 +44,7 @@ extern "C"
 
 RunController::RunController(): QObject( 0 ), mPrepared( false ), mStdOut( 0 ), mObserver( 0 ), mAbort( false ), mExecuting( false ), mDebugging( false ), mTimer( 0 )
 {
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     mNotifier = 0;
 #else
     mOutputTimer = 0;
@@ -75,7 +75,7 @@ bool RunController::initialize( const QImage &source )
     if ( !mTimer )
         mTimer = new QTimer( this );
     connect( mTimer, SIGNAL( timeout() ), this, SLOT( tick() ) );
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     if ( !mOutputTimer )
         mOutputTimer = new QTimer( this );
 
@@ -192,7 +192,7 @@ void RunController::finish()
     mDebugging = false;
     mPrepared = false;
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     if ( mNotifier == 0 ) return;
 
     std::cout.flush(); // flush standard output cout file descriptor
@@ -290,7 +290,7 @@ void RunController::putChar( const QChar & c )
 {
     qDebug() << "putChar";
     QMutexLocker locker( &mMutex );
-    mChar = c.toAscii();
+    mChar = c.toLatin1();
     mWaitCond.wakeOne();
 }
 
@@ -304,7 +304,7 @@ void RunController::putInt( int i )
 
 void RunController::win32OutputTimeout()
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     //qDebug() << "win32OutputTimeout ";
     DWORD dwAvail = 0;
     if ( !::PeekNamedPipe( mPipeRead, NULL, 0, NULL, &dwAvail, NULL ) ) {
@@ -349,7 +349,7 @@ void RunController::captureStdout()
     7. Pass the FILE* to qtextstream
     8. Create a QSocketNotifier on the pipe's read end to monitor for new data
     */
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     int rc = ::pipe( mPipeFd );
 
     Q_ASSERT( rc >= 0 );
