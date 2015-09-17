@@ -1,4 +1,4 @@
-INCLUDE (CheckIncludeFiles)
+include (CheckIncludeFiles)
 
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules )
 
@@ -21,11 +21,11 @@ endif()
 # source, we create a config.h file that plays nice with the
 # autotools-isms in npiet.c
 ###
-CHECK_INCLUDE_FILES (gd.h HAVE_GD_H)
-CHECK_INCLUDE_FILES (png.h HAVE_PNG_H)
-CHECK_INCLUDE_FILES (gif_lib.h HAVE_GIF_LIB_H)
+check_include_files (gd.h HAVE_GD_H)
+check_include_files (png.h HAVE_PNG_H)
+check_include_files (gif_lib.h HAVE_GIF_LIB_H)
 
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 
 
@@ -34,9 +34,9 @@ set( DEBUG_BUILD_TYPE ON )
 
 set( CMAKE_AUTOMOC ON )
 
-ENABLE_TESTING()
+enable_testing()
 
-ADD_TEST(npiettest ${EXECUTABLE_OUTPUT_PATH}/npiettest Hello)
+add_test(npiettest ${EXECUTABLE_OUTPUT_PATH}/npiettest Hello)
 
 set(npiet_SRCS npiet.c npiet_utils.c)
 
@@ -53,15 +53,11 @@ target_link_libraries( npiet
 
 set( npiettest_SRCS test/NPietTest.cpp )
 #qt4_automoc(${npiettest_SRCS})
-ADD_EXECUTABLE(npiettest ${npiettest_SRCS} )
-TARGET_LINK_LIBRARIES(npiettest
+add_executable(npiettest ${npiettest_SRCS} )
+target_link_libraries(npiettest
     Qt5::Core
     Qt5::Widgets
     Qt5::Test
-    #${QT_LIBRARIES}
-    #${QT_QTTEST_LIBRARIES}
-    #${QT_QTCORE_LIBRARY}
-    #${QT_QTGUI_LIBRARY}
     npiet )
 
 # copy libs to the output dirs

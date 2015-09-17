@@ -1,5 +1,5 @@
 project(pietcreator)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.12)
 
 set( CMAKE_BUILD_TYPE Debug)
 set( DEBUG_BUILD_TYPE ON )
@@ -39,13 +39,13 @@ set( pietcreator_RCS
     fallback.qrc
     pietcreator.qrc )
 
-QT5_ADD_RESOURCES( pietcreator_SRCS ${pietcreator_RCS} )
+qt5_add_resources( pietcreator_SRCS ${pietcreator_RCS} )
 
 #qt4_automoc(${pietcreator_SRCS})
 
 qt5_wrap_ui( pietcreator_SRCS MainWindow.ui DebugWidget.ui )
 
-IF(WIN32) 
+if(WIN32)
 add_executable(pietcreator ${pietcreator_SRCS} ${CMAKE_CURRENT_SOURCE_DIR}/pietcreator.rc)
 else()
 add_executable(pietcreator ${pietcreator_SRCS})
