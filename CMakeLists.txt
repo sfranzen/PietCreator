@@ -41,8 +41,6 @@ set( pietcreator_RCS
 
 qt5_add_resources( pietcreator_SRCS ${pietcreator_RCS} )
 
-#qt4_automoc(${pietcreator_SRCS})
-
 qt5_wrap_ui( pietcreator_SRCS MainWindow.ui DebugWidget.ui )
 
 if(WIN32)
