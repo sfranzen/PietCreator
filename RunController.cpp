@@ -42,7 +42,15 @@ extern "C"
 #include "npiet/npiet_utils.h"
 }
 
-RunController::RunController(): QObject( 0 ), mPrepared( false ), mStdOut( 0 ), mObserver( 0 ), mAbort( false ), mExecuting( false ), mDebugging( false ), mTimer( 0 )
+RunController::RunController() :
+    QObject( 0 ),
+    mPrepared( false ),
+    mStdOut( 0 ),
+    mObserver( 0 ),
+    mAbort( false ),
+    mExecuting( false ),
+    mDebugging( false ),
+    mTimer( 0 )
 {
 #ifndef Q_OS_WIN
     mNotifier = 0;
@@ -53,12 +61,13 @@ RunController::RunController(): QObject( 0 ), mPrepared( false ), mStdOut( 0 ), 
 
 RunController::~RunController()
 {
+    QMutexLocker locker(&mMutex);
     qDebug() << "~RunController";
-    mMutex.lock();
+
     mAbort = true;
     qDebug() << "waking";
     mWaitCond.wakeOne();
-    mMutex.unlock();
+    locker.unlock();
     thread()->wait();
 }
 
@@ -145,27 +154,26 @@ void RunController::stop()
 
 bool RunController::runSource( const QImage& source )
 {
-    mMutex.lock();
+    QMutexLocker locker(&mMutex);
     stop();
     mExecuting = true;
-    mMutex.unlock();
+    locker.unlock();
     if ( initialize( source ) ) {
         execute();
         return true;
     }
     abort();
-    mMutex.lock();
+    locker.relock();
     finish();
-    mMutex.unlock();
     return false;
 }
 
 void RunController::debugSource( const QImage& source )
 {
-    mMutex.lock();
+    QMutexLocker locker(&mMutex);
     stop();
     mDebugging = true;
-    mMutex.unlock();
+    locker.unlock();
     if ( !initialize( source ) )
         abort();
     emit debugStarted();
@@ -263,23 +271,23 @@ void RunController::slotStepped( trace_step* step )
 
 char RunController::getChar()
 {
-//     QMutexLocker locker( &mMutex );
+    QMutexLocker locker( &mMutex );
     emit waitingForChar();
-    mWaitCond.wait( &mMutex );
+    mWaitCond.wait(locker.mutex());
     return mChar;
 }
 
 int RunController::getInt()
 {
 //     qDebug() << "getInt()" << "getting lock";
-//     QMutexLocker locker( &mMutex );
+     QMutexLocker locker( &mMutex );
 //     qDebug() << "getInt()" << "got lock";
     emit waitingForInt();
 //     qDebug() << "getInt()" << "waiting";
     bool timer_running = mTimer->isActive();
     if ( timer_running )
         mTimer->stop();
-    mWaitCond.wait( &mMutex );
+    mWaitCond.wait(locker.mutex());
     qDebug() << "getInt()" << "woke up!" << mInt;
     if ( timer_running )
         mTimer->start();

@@ -107,30 +107,31 @@ MainWindow::MainWindow( QWidget *parent ) :
             mSaveMessage += ";;";
     }
 
-    connect( mDelegate, SIGNAL( imageEdited() ), SLOT( slotImageEdited() ) );
-    connect( ui->mZoomSlider, SIGNAL( valueChanged( int ) ), mMonitor, SLOT( setPixelSize( int ) ) );
-    connect( mMonitor, SIGNAL( pixelSizeChanged( int ) ), SLOT( slotUpdateView( int ) ) );
-
-    connect( ui->mClearOutput, SIGNAL( clicked() ), this, SLOT( slotClearOutputView() ) );
-
-    connect( ui->mInputEdit, SIGNAL( returnPressed() ), this, SLOT( slotReturnPressed() ) );
+    // connect signals
+    connect(mDelegate, &PixelDelegate::imageEdited, this, &MainWindow::slotImageEdited);
+    connect(ui->mZoomSlider, &QSlider::valueChanged, mMonitor, &ViewMonitor::setPixelSize);
+    connect(mMonitor, &ViewMonitor::pixelSizeChanged, this, &MainWindow::slotUpdateView);
+    connect(ui->mClearOutput, &QPushButton::clicked, this, &MainWindow::slotClearOutputView);
+    connect(ui->mInputEdit, &QLineEdit::returnPressed, this, &MainWindow::slotReturnPressed);
 
     mRunController = new RunController;
-    connect( this, SIGNAL( executeSource( QImage ) ), mRunController, SLOT( runSource( QImage ) ) );
-    connect( this, SIGNAL( debugSource( QImage ) ), mRunController, SLOT( debugSource( QImage ) ) );
-    connect( this, SIGNAL( debugStep() ), mRunController, SLOT( step() ) );
-    connect( this, SIGNAL( debugStop() ), this, SLOT( slotStopController() ) );
-    connect( mModel, SIGNAL( pixelChanged( int, int, QRgb ) ), mRunController, SLOT( pixelChanged( int, int, QRgb ) ) );
+    connect(this, &MainWindow::executeSource, mRunController, &RunController::runSource);
+    connect(this, &MainWindow::debugSource, mRunController, &RunController::debugSource);
+    connect(this, &MainWindow::debugStep, mRunController, &RunController::step);
+    connect(this, &MainWindow::debugStop, this, &MainWindow::slotStopController);
+    connect(mModel, &ImageModel::pixelChanged, mRunController, &RunController::pixelChanged);
 
-    connect( mRunController, SIGNAL( stepped( trace_step* ) ), mDebugWidget, SLOT( slotStepped( trace_step* ) ) );
-    connect( mRunController, SIGNAL( actionChanged( trace_action* ) ), mDebugWidget, SLOT( slotActionChanged( trace_action* ) ) );
-    connect( mRunController, SIGNAL( stopped() ), this, SLOT( slotControllerStopped() ) );
-    connect( mRunController, SIGNAL( debugStarted() ), this, SLOT( slotControllerStarted() ) );
-    connect( mRunController, SIGNAL( stopped() ), mDebugWidget, SLOT( slotDebugStopped() ) );
-    connect( mRunController, SIGNAL( debugStarted() ), mDebugWidget, SLOT( slotDebugStarted() ) );
-    connect( mRunController, SIGNAL( waitingForInt() ), this, SLOT( slotGetInt() ) );
-    connect( mRunController, SIGNAL( waitingForChar() ), this, SLOT( slotGetChar() ) );
-    connect( mRunController, SIGNAL( newOutput( QString ) ), this, SLOT( slotNewOutput( QString ) ) );
+    // the next two can't be done with the function pointer syntax because the struct argument is not a Q_OBJECT
+    connect(mRunController, SIGNAL(stepped(trace_step*)), mDebugWidget, SLOT(slotStepped(trace_step*)));
+    connect(mRunController, SIGNAL(actionChanged(trace_action*)), mDebugWidget, SLOT(slotActionChanged(trace_action*)));
+
+    connect(mRunController, &RunController::stopped, this, &MainWindow::slotControllerStopped);
+    connect(mRunController, &RunController::debugStarted, this, &MainWindow::slotControllerStarted);
+    connect(mRunController, &RunController::stopped, mDebugWidget, &DebugWidget::slotDebugStopped);
+    connect(mRunController, &RunController::debugStarted, mDebugWidget, &DebugWidget::slotDebugStarted);
+    connect(mRunController, &RunController::waitingForInt, this, &MainWindow::slotGetInt);
+    connect(mRunController, &RunController::waitingForChar, this, &MainWindow::slotGetChar);
+    connect(mRunController, &RunController::newOutput, this, &MainWindow::slotNewOutput);
 
     connect( &mRunThread, SIGNAL( started() ), mRunController, SLOT( slotThreadStarted() ) );
     mRunController->moveToThread( &mRunThread );
