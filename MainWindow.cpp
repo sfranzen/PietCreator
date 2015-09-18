@@ -65,8 +65,6 @@ MainWindow::MainWindow( QWidget *parent ) :
     ui->mView->verticalHeader()->hide();
     ui->mView->horizontalHeader()->setMinimumSectionSize( 1 );
     ui->mView->verticalHeader()->setMinimumSectionSize( 1 );
-    //ui->mView->verticalHeader()->setResizeMode( QHeaderView::Fixed );
-    //ui->mView->horizontalHeader()->setResizeMode( QHeaderView::Fixed );
     ui->mView->verticalHeader()->setSectionResizeMode( QHeaderView::Fixed );
     ui->mView->horizontalHeader()->setSectionResizeMode( QHeaderView::Fixed );
     ui->mView->horizontalHeader()->setDefaultSectionSize( 12 );

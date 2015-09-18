@@ -109,9 +109,9 @@ void ImageModel::setImage( const QImage& image, int codel_size )
 {
     mImage = autoScale(image, codel_size);
     qDebug() << mImage.width() << mImage.height();
-    //reset();
-    emit layoutChanged();
 
+    beginResetModel();
+    endResetModel();
 }
 
 void ImageModel::newImage(int w, int h)
@@ -130,7 +130,8 @@ void ImageModel::insertImage(const QImage& _image, int x, int y)
 {
     QPainter p( &mImage );
     p.drawImage( x, y, _image );
-    reset();
+    beginResetModel();
+    endResetModel();
 }
 
 void ImageModel::setDebuggedPixel( int x, int y )
