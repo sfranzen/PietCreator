@@ -17,7 +17,7 @@
     02110-1301, USA.
 */
 
-#include <QtWidgets>
+#include <QtWidgets/QApplication>
 #include "MainWindow.h"
 
 #include "Command.h"
